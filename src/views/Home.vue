@@ -1,19 +1,19 @@
 <template>
   <div class="home">
-    <BlogPost :post="welcomeScreen"/>
-    <BlogPost :post="post" v-for="(post, i) in sampleBlogPost" :key="i"/>
+    <BlogPost v-if="!user" :post="welcomeScreen"/>
+    <BlogPost :post="post" v-for="(post, i) in blogPostsFeed" :key="i"/>
     <div class="blog-card-wrap">
       <div class="container">
         <h3>View More Recent Blogs</h3>
         <div class="blog-cards">
-          <BlogCard :post="post" v-for="(post, i) in sampleBlogCards" :key="i"/>
+          <BlogCard :post="post" v-for="(post, i) in blogPostsCards" :key="i"/>
         </div>
       </div>
     </div>
-    <div class="updates">
+    <div v-if="!user" class="updates">
       <div class="container">
         <h2>Never miss a post. Register for your free account today!</h2>
-        <router-link class="router-button" to="#">
+        <router-link class="router-button" :to="{name: 'Register'}">
           Register for FireBlogs <Arrow class="arrow arrow-light"/>
         </router-link>
       </div>
@@ -42,26 +42,22 @@ export default {
         welcomeScreen: true,
         photo: "coding",
       },
-      sampleBlogPost: [
-        {
-          title: "This is a filler title!",
-          blogHTML: "This is a filler blog post title!",
-          blogCoverPhoto: "beautiful-stories",
-        },
-        {
-          title: "This is a filler title!",
-          blogHTML: "This is a filler blog post title!",
-          blogCoverPhoto: "designed-for-everyone",
-        },
-      ],
-      sampleBlogCards: [
-        {blogTitle: 'Blog card #1', blogCoverPhoto: 'stock-1', blogDate: 'May 1. 2021'},
-        {blogTitle: 'Blog card #2', blogCoverPhoto: 'stock-2', blogDate: 'May 1. 2021'},
-        {blogTitle: 'Blog card #3', blogCoverPhoto: 'stock-3', blogDate: 'May 1. 2021'},
-        {blogTitle: 'Blog card #4', blogCoverPhoto: 'stock-4', blogDate: 'May 1. 2021'},
-      ]
+      
+      
     };
   },
+  computed: {
+    blogPostsCards(){
+      return this.$store.getters.blogPostsCards
+    },
+    blogPostsFeed(){
+      return this.$store.getters.blogPostsFeed
+    },
+    user(){
+      return this.$store.state.user;
+    },
+
+  }
 };
 </script>
 

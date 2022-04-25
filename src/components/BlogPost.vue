@@ -1,15 +1,15 @@
 <template>
-  <div class="blog-wrapper no-user">
+  <div class="blog-wrapper" :class="{'no-user':!user}">
     <div class="blog-content">
       <div>
         <h2 v-if="post.welcomeScreen">{{ post.title }}</h2>
-        <h2 v-else>{{ post.title }}</h2>
+        <h2 v-else>{{ post.blogTitle }}</h2>
         <p v-if="post.welcomeScreen">{{ post.blogPost }}</p>
-        <p class="content-preview" v-else>{{ post.blogHTML }}</p>
-        <router-link class="link link-light" v-if="post.welcomeScreen" to="#">
+        <p class="content-preview" v-else v-html="post.blogHTML"></p>
+        <router-link class="link link-light" v-if="post.welcomeScreen" :to="{name: 'Login'}">
           Login/Register <Arrow class="arrow arrow-light" />
         </router-link>
-        <router-link class="link" v-else to="#">
+        <router-link class="link" v-else :to="{name: 'ViewBlog', params: {blogId: this.post.blogId}}">
           View the post <Arrow class="arrow" />
         </router-link>
       </div>
@@ -22,7 +22,7 @@
       />
       <img
         v-else
-        :src="require(`../assets/blogPhotos/${post.blogCoverPhoto}.jpg`)"
+        :src="post.blogCoverPhoto"
         alt=""
       />
     </div>
@@ -37,6 +37,11 @@ export default {
   components: {
     Arrow,
   },
+  computed:{
+    user(){
+      return this.$store.state.user;
+    }
+  }
 };
 </script>
 
@@ -112,13 +117,13 @@ export default {
         transition: 0.5s ease-in all;
 
         &:hover {
-          border-bottom: #303030;
+          border-bottom: 1px solid #303030;
         }
       }
 
       .link-light {
         &:hover {
-          border-bottom: #fff;
+          border-bottom: 1px solid #fff;
         }
       }
     }

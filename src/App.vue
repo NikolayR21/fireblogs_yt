@@ -1,16 +1,18 @@
 <template>
   <div class="app-wrapper">
-    <div class="app">
-      <Navigation />
+    <div class="app" v-if="this.$store.state.postLoaded">
+      <Navigation v-if="!navigationDisabled"/>
       <router-view />
-      <Footer />
+      <Footer v-if="!navigationDisabled"/>
     </div>
   </div>
 </template>
 
 <script>
-import Navigation from './components/Navigation.vue'
-import Footer from './components/Footer.vue'
+import Navigation from './components/Navigation.vue';
+import Footer from './components/Footer.vue';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 export default {
   name: "app",
   components: {
@@ -18,12 +20,39 @@ export default {
     Footer
   },
   data() {
-    return {};
+    return {
+      navigationDisabled: null
+    };
   },
-  created() {},
+  created() {
+    firebase.auth().onAuthStateChanged( user => {
+      this.$store.commit('updateUser', user);
+
+      if(user){
+        this.$store.dispatch('getCurrentUser', user);
+      }
+    })
+    this.checkRoute();
+    this.$store.dispatch("getPost");
+  },
   mounted() {},
-  methods: {},
-  watch: {},
+  methods: {
+    checkRoute(){
+      if(this.$route.name === 'Login' ||
+      this.$route.name === 'Register' ||
+      this.$route.name === 'ForgotPassword'
+      ){
+        this.navigationDisabled = true;
+        return;
+      }
+      this.navigationDisabled = false;
+    }
+  },
+  watch: {
+    $route(){
+      this.checkRoute();
+    }
+  },
 };
 </script>
 
@@ -123,6 +152,12 @@ button,
   pointer-events: none !important;
   cursor: none !important;
   background: rgba(128, 128, 128, .5) !important;
+}
+
+.error{
+  text-align: center;
+  font-size: 12px;
+  color: red;
 }
 
 .blog-card-wrap{
